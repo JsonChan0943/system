@@ -5,6 +5,7 @@ import java.util.UUID;
 
 import javax.annotation.Resource;
 
+import junit.framework.TestCase;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.test.context.ContextConfiguration;
@@ -20,7 +21,7 @@ import chen.huai.jie.system.service.UserService;
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = { "classpath:spring-*.xml" })
-public class UserServiceTest {
+public class UserServiceTest extends TestCase{
 	@Resource
 	private UserService userServiceImpl;
 
