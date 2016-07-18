@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"      
+ "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="chen.huai.jie.system.dao.TDicValueDAO"><!-- 映射到手工编写的映射器UserDAO -->
+	<sql id="dicValueColumns">
+		a.id id,a.key_code key_code,a.value_code value_code,a.value_name value_name,a.sort sort,a.remark remark
+	</sql>
+	<!-- 分页查找Car -->
+	<select id="findDicValueByPage" parameterType="chen.huai.jie.system.pager.TDicValuePager" resultType="chen.huai.jie.system.entity.TDicValueEntity">
+		select <include refid="dicValueColumns"/>
+			from tdic_value a
+		<where>
+				1=1 and key_code = #{key_code}
+				<!-- 按条件搜索-值的编码 -->
+				<if test='value_code != null and !"".equals(value_code)'>
+					and value_code like '%${value_code}%'
+				</if>
+				<!-- 按条件搜索-值的名名 -->
+				<if test='value_name != null and !"".equals(value_name)'>
+					and value_name like '%${value_name}%'
+				</if>
+		</where>
+		<if test='sort!=null and !"".equals(sort) and order!=null and !"".equals(order)'>
+			order by ${sort} ${order}
+		</if>
+		limit ${startRow},${rows} 
+	</select>
+	
+	<!-- 统计菜单数量 -->
+	<select id="countDicValueCnt" parameterType="chen.huai.jie.system.pager.TDicValuePager" resultType="java.lang.Long">
+		select count(id)
+			from tdic_value
+		<where>
+				1=1 and key_code = #{key_code}
+				<!-- 按条件搜索-值的编码 -->
+				<if test='value_code != null and !"".equals(value_code)'>
+					and value_code like '%${value_code}%'
+				</if>
+				<!-- 按条件搜索-值的名名 -->
+				<if test='value_name != null and !"".equals(value_name)'>
+					and value_name like '%${value_name}%'
+				</if>
+		</where>
+	</select>
+	
+	<!-- 增加数据字典值 -->
+	<insert id="addDicValue" parameterType="chen.huai.jie.system.entity.TDicValueEntity">
+		insert into tdic_value
+		(
+			id,key_code,value_code,value_name,sort,remark
+		)
+		values
+		(
+			#{id,jdbcType=VARCHAR},
+			#{key_code,jdbcType=VARCHAR},
+			#{value_code,jdbcType=VARCHAR},
+			#{value_name,jdbcType=VARCHAR},
+			#{sort,jdbcType=TINYINT},
+			#{remark,jdbcType=VARCHAR}
+		)
+	</insert>
+	
+	<!-- 更新 -->
+	<update id="updateDicValue" parameterType="chen.huai.jie.system.entity.TDicValueEntity">
+		update tdic_value set
+			key_code = #{key_code,jdbcType=VARCHAR},
+			value_code = #{value_code,jdbcType=VARCHAR},
+			value_name = #{value_name,jdbcType=VARCHAR},
+			sort = #{sort,jdbcType=TINYINT},
+			remark = #{remark,jdbcType=VARCHAR}
+			where id = #{id}
+	</update>
+	
+	<!-- 删除 -->
+	<delete id="delDicValue" parameterType="java.lang.String">
+		delete from tdic_value where id = #{id}
+	</delete>
+	
+	<!-- 根据id查找 -->
+	<select id="findDicValueById" parameterType="java.lang.String" resultType="chen.huai.jie.system.entity.TDicValueEntity">
+		select <include refid="dicValueColumns"/>
+			from tdic_value a where id = #{id}
+	</select>
+</mapper>

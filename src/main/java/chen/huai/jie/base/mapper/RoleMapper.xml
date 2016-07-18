@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"      
+ "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="chen.huai.jie.system.dao.RoleDAO"><!-- 映射到手工编写的映射器UserDAO -->
+	<!-- 查询字段 -->
+	<sql id="roleColumns">
+		a.id id,a.role_code role_code,a.role_name
+		role_name,a.description
+		description,a.remark remark
+	</sql>
+
+	<!-- 分页查找角色 -->
+	<select id="findRoleByPage" parameterType="chen.huai.jie.system.pager.RolePager"
+		resultType="chen.huai.jie.system.entity.RoleEntity">
+		select
+		<include refid="roleColumns" />
+		from tsys_role a
+		<where>
+			1=1
+			<!-- 按条件搜索-角色编码 -->
+			<if test='role_code != null and !"".equals(role_code)'>
+				and role_code like '%${role_code}%'
+			</if>
+			<!-- 按条件搜索-角色名 -->
+			<if test='role_name != null and !"".equals(role_name)'>
+				and role_name like '%${role_name}%'
+			</if>
+		</where>
+		<if
+			test='sort!=null and !"".equals(sort) and order!=null and !"".equals(order)'>
+			order by ${sort} ${order}
+		</if>
+		limit ${startRow},${rows}
+	</select>
+
+	<!-- 统计角色数量 -->
+	<select id="countRoleCnt" parameterType="chen.huai.jie.system.pager.RolePager"
+		resultType="java.lang.Long">
+		select count(id)
+		from tsys_role
+		<where>
+			1=1
+			<!-- 按条件搜索-角色编码 -->
+			<if test='role_code != null and !"".equals(role_code)'>
+				and role_code like '%${role_code}%'
+			</if>
+			<!-- 按条件搜索-角色名 -->
+			<if test='role_name != null and !"".equals(role_name)'>
+				and role_name like '%${role_name}%'
+			</if>
+		</where>
+	</select>
+
+	<!-- 添加角色记录 -->
+	<insert id="addRole" parameterType="chen.huai.jie.system.entity.RoleEntity">
+		insert into tsys_role
+		(
+		id,role_code,role_name,description,remark
+		)
+		values
+		(
+		#{id,jdbcType=VARCHAR},
+		#{role_code,jdbcType=VARCHAR},
+		#{role_name,jdbcType=VARCHAR},
+		#{description,jdbcType=VARCHAR},
+		#{remark,jdbcType=VARCHAR}
+		)
+	</insert>
+
+	<!-- 为角色绑定菜单 -->
+	<insert id="addMenuForRole" parameterType="chen.huai.jie.system.entity.RoleMenuEntity">
+		insert into
+		tsys_role_menu
+		(
+		id,role_id,menu_id
+		)
+		values
+		(
+		#{id,jdbcType=VARCHAR},
+		#{role_id,jdbcType=VARCHAR},
+		#{menu_id,jdbcType=VARCHAR}
+		)
+	</insert>
+
+	<!-- 根据roleid获取RoleMenuEntity信息 -->
+	<select id="getRoleMenuInfoByRoleId" parameterType="java.lang.String"
+		resultType="chen.huai.jie.system.entity.RoleMenuEntity">
+		select a.id id,a.role_id role_id,a.menu_id menu_id
+		from
+		tsys_role_menu a
+		where role_id = #{role_id}
+	</select>
+
+	<!-- 更新角色 -->
+	<update id="updateRole" parameterType="chen.huai.jie.system.entity.RoleEntity">
+		update tsys_role set
+		role_code = #{role_code,jdbcType=VARCHAR},
+		role_name =
+		#{role_name,jdbcType=VARCHAR},
+		description =
+		#{description,jdbcType=VARCHAR},
+		remark = #{remark,jdbcType=VARCHAR}
+		where id = #{id}
+	</update>
+
+	<!-- 根据id获取角色 -->
+	<select id="findRoleById" parameterType="java.lang.String"
+		resultType="chen.huai.jie.system.entity.RoleEntity">
+		select
+		<include refid="roleColumns" />
+		from tsys_role a
+		where id=#{id}
+	</select>
+
+	<!-- 根据角色id删除所有角色菜单记录 -->
+	<delete id="deleteAllRoleMenuInfoByRoleId" parameterType="java.lang.String">
+		delete
+		from tsys_role_menu where role_id = #{role_id}
+	</delete>
+
+	<!-- 根据id删除角色 -->
+	<delete id="deleteRoleById" parameterType="java.lang.String">
+		delete from tsys_role
+		where id = #{id}
+	</delete>
+
+	<!-- 查找所有的角色 -->
+	<select id="findAllRoles" resultType="chen.huai.jie.system.entity.RoleEntity">
+		select
+		<include refid="roleColumns" />
+		from tsys_role a
+	</select>
+
+	<!-- 为用户增加角色 -->
+	<insert id="addRoleForUser" parameterType="chen.huai.jie.system.entity.UserRoleEntity">
+		insert into
+		tsys_user_role
+		(
+		id,user_id,role_id
+		)
+		values
+		(
+		#{id,jdbcType=VARCHAR},
+		#{user_id,jdbcType=VARCHAR},
+		#{role_id,jdbcType=VARCHAR}
+		)
+	</insert>
+
+	<!-- 根据userid获取UserRoleEntity信息 -->
+	<select id="getUserRoleEntityByUserId" parameterType="java.lang.String"
+		resultType="chen.huai.jie.system.entity.UserRoleEntity">
+		select a.id id,a.user_id user_id,a.role_id role_id
+		from
+		tsys_user_role a
+		where user_id = #{user_id}
+	</select>
+
+	<!-- 根据用户id删除所有用户角色记录 -->
+	<delete id="deleteAllUserRoleInfoByUserId" parameterType="java.lang.String">
+		delete
+		from tsys_user_role where user_id = #{user_id}
+	</delete>
+
+</mapper>

@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"      
+ "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="chen.huai.jie.system.dao.TDicKeyDAO"><!-- 映射到手工编写的映射器UserDAO -->
+	<sql id="dicKeyColumns">
+		a.id id,a.key_name key_name,a.key_code key_code,a.remark remark
+	</sql>
+	<!-- 分页查找字典值 -->
+	<select id="findDicKeyByPage" parameterType="chen.huai.jie.system.pager.TDicKeyPager" resultType="chen.huai.jie.system.entity.TDicKeyEntity">
+		select <include refid="dicKeyColumns"/>
+			from tdic_key a
+		<where>
+				1=1 
+				<!-- 按条件搜索-键的编码 -->
+				<if test='key_name != null and !"".equals(key_name)'>
+					and key_name like '%${key_name}%'
+				</if>
+				<!-- 按条件搜索-键的名名 -->
+				<if test='key_code != null and !"".equals(key_code)'>
+					and key_code like '%${key_code}%'
+				</if>
+		</where>
+		<if test='sort!=null and !"".equals(sort) and order!=null and !"".equals(order)'>
+			order by ${sort} ${order}
+		</if>
+		limit ${startRow},${rows} 
+	</select>
+	
+	<!-- 统计菜单数量 -->
+	<select id="countDicKeyCnt" parameterType="chen.huai.jie.system.pager.TDicKeyPager" resultType="java.lang.Long">
+		select count(id)
+			from tdic_key
+		<where>
+				1=1
+				<!-- 按条件搜索-键的编码 -->
+				<if test='key_name != null and !"".equals(key_name)'>
+					and key_name like '%${key_name}%'
+				</if>
+				<!-- 按条件搜索-键的名名 -->
+				<if test='key_code != null and !"".equals(key_code)'>
+					and key_code like '%${key_code}%'
+				</if>
+		</where>
+	</select>
+	
+	<!-- 增加数据字典键 -->
+	<insert id="addDicKey" parameterType="chen.huai.jie.system.entity.TDicKeyEntity">
+		insert into tdic_key
+		(
+			id,key_name,key_code,remark
+		)
+		values
+		(
+			#{id,jdbcType=VARCHAR},
+			#{key_name,jdbcType=VARCHAR},
+			#{key_code,jdbcType=VARCHAR},
+			#{remark,jdbcType=VARCHAR}
+		)
+	</insert>
+	
+	<!-- 修改数据字典键 -->
+	<update id="updateDicKey" parameterType="chen.huai.jie.system.entity.TDicKeyEntity">
+		update tdic_key set
+			key_name = #{key_name,jdbcType=VARCHAR},
+			key_code = #{key_code,jdbcType=VARCHAR},
+			remark = #{remark,jdbcType=VARCHAR}
+			where id = #{id}
+	</update>
+	
+	<!-- 删除数据字典键 -->
+	<delete id="delDicKey" parameterType="java.lang.String">
+		delete from tdic_key where id=#{id}
+	</delete>
+</mapper>

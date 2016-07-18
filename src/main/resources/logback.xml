@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 日志管理  -->
+<configuration scan="true" scanPeriod="60 seconds" debug="false">
+	<property name="logDir" value="../smmLog/log" /><!-- 设置变量 -->
+	<!-- 把日志添加到控制台，是负责写日志的组件 -->
+	
+	<!-- 把日志添加到控制台 -->
+	<appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+		<Encoding>UTF-8</Encoding>
+		<layout class="ch.qos.logback.classic.PatternLayout">
+			<Pattern>%date [%thread] %-5level %logger{80}- %msg%n</Pattern>
+		</layout>
+	</appender>
+	
+	<!-- 滚动记录文件，先将日志记录到指定文件，当符合某个条件时，将日志记录到其他文件 -->
+	<appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<Encoding>UTF-8</Encoding>
+		<file>${logDir}/smm.log</file>
+		<layout class="ch.qos.logback.classic.PatternLayout">
+			<Pattern>%date [%thread] %-5level %logger{80} -%msg%n</Pattern>
+		</layout>
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy"><!-- 根据时间来制定滚动策略 -->
+			<FileNamePattern>
+				${logDir}/smm.%d{yyyy-MM-dd}.log
+			</FileNamePattern>
+		</rollingPolicy>
+	</appender>
+	<!-- 
+		用来设置某一个包或者具体的某一个类的日志打印级别、以及指定<appender>。
+		<loger>仅有一个name属性，一个可选的level和一个可选的addtivity属性。 
+	-->
+	<!-- 
+		没有设置addtivity，默认为true，将此loger的打印信息向上级传递；
+		没有设置appender，此loger本身不打印任何信息。
+	 -->
+	 <!-- 
+	 	通用日志把日志消息分为6个级别：FATAL、ERROR、WARN、INFO、DEBUG、TRACE,从左到右日志级别越来越低
+	 	只有当输出日志的级别大于或等于日志配置的日志级别时，这个方法才会被真正执行.
+	  -->
+	<logger name="org.springframework" level="ERROR" />
+	<logger name="org.apache.commons.beanutils"  level="ERROR" />
+	<logger name="freemarker"  level="ERROR" />
+ 	<logger name="chen.huai.jie" level="DEBUG"/>
+	<root level="DEBUG"><!-- 也是<loger>元素，但是它是根loger。只有一个level属性，应为已经被命名为"root". -->
+		<appender-ref ref="STDOUT" />
+		<appender-ref ref="FILE" />
+	</root>
+</configuration>

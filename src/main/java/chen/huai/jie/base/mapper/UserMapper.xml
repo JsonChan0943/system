@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"      
+ "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="chen.huai.jie.system.dao.UserDAO"><!-- 映射到手工编写的映射器UserDAO -->
+	<!-- 查询字段 -->
+	<sql id="userColumns"> 
+		a.id id,a.user_login_name user_login_name,a.user_name user_name,a.password password,
+		a.state state,a.organ_code organ_code,a.organ_name organ_name,a.login_error_count login_error_count,
+		a.auto_unlock_time auto_unlock_time,a.create_time create_time,a.last_login_time last_login_time,
+		a.last_pwd_modify_time last_pwd_modify_time
+	</sql>
+	
+	<!-- 分页查找Car -->
+	<select id="findUserByPage" parameterType="chen.huai.jie.system.pager.UserPager" resultType="chen.huai.jie.system.entity.UserEntity">
+		select <include refid="userColumns"/>
+			from tsys_user a
+		<where>
+				1=1
+				<!-- 按条件搜索-用户登录名 -->
+				<if test='user_login_name != null and !"".equals(user_login_name)'>
+				  	and user_login_name like '%${user_login_name}%'
+			  	</if>
+			  	<!-- 按条件搜索-登录名 -->
+				<if test='user_name != null and !"".equals(user_name)'>
+				  	and user_name like '%${user_name}%'
+			  	</if>
+		</where>
+		<if test='sort!=null and !"".equals(sort) and order!=null and !"".equals(order)'>
+			order by ${sort} ${order}
+		</if>
+		<if test='rows!=null and !"".equals(rows)'>
+			limit ${startRow},${rows} 
+		</if>
+	</select>
+	
+	<select id="countUserCnt" parameterType="chen.huai.jie.system.pager.UserPager" resultType="java.lang.Long">
+		select count(id)
+			from tsys_user
+		<where>
+				1=1
+				<!-- 按条件搜索-用户登录名 -->
+				<if test='user_login_name != null and !"".equals(user_login_name)'>
+				  	and user_login_name like '%${user_login_name}%'
+			  	</if>
+			  	<!-- 按条件搜索-登录名 -->
+				<if test='user_name != null and !"".equals(user_name)'>
+				  	and user_name like '%${user_name}%'
+			  	</if>
+		</where>
+	</select>
+	
+	<!-- 添加Car记录 -->
+	<insert id="addUser" parameterType="chen.huai.jie.system.entity.UserEntity">
+		 insert into tsys_user
+		 (
+		 	id,user_login_name,user_name,password,state,organ_code,organ_name,login_error_count,auto_unlock_time,create_time,
+		 	last_login_time,last_pwd_modify_time
+		 )
+		 values
+		 (	 
+		 	 #{id,jdbcType=VARCHAR},
+			 #{user_login_name,jdbcType=VARCHAR},
+			 #{user_name,jdbcType=VARCHAR},
+			 #{password,jdbcType=VARCHAR},
+			 #{state,jdbcType=TINYINT},
+			 #{organ_code,jdbcType=VARCHAR},
+		  	 #{organ_name,jdbcType=VARCHAR},
+		  	 #{login_error_count,jdbcType=TINYINT},
+			 #{auto_unlock_time,jdbcType=TIMESTAMP},
+		  	 #{create_time,jdbcType=TIMESTAMP},
+		  	 #{last_login_time,jdbcType=TIMESTAMP},
+		  	 #{last_pwd_modify_time,jdbcType=TIMESTAMP}
+	 	 )	 		
+	</insert>
+	
+	<!-- 按照主键查找id -->
+	<select id="findUserById" parameterType="java.lang.String" resultType="chen.huai.jie.system.entity.UserEntity">
+		select <include refid="userColumns"/>
+			from tsys_user a
+			where id = #{id}
+	</select>
+	
+	<!-- 更新用户 -->
+	<update id="updateUser" parameterType="chen.huai.jie.system.entity.UserEntity">
+		update tsys_user set
+			user_login_name = #{user_login_name,jdbcType=VARCHAR},
+			user_name = #{user_name,jdbcType=VARCHAR},
+			password = #{password,jdbcType=VARCHAR},
+		 	state = #{state,jdbcType=TINYINT},
+		 	organ_code = #{organ_code,jdbcType=VARCHAR},
+		 	organ_name = #{organ_name,jdbcType=VARCHAR},
+		 	login_error_count = #{login_error_count,jdbcType=TINYINT},
+			auto_unlock_time = #{auto_unlock_time,jdbcType=TIMESTAMP},
+		  	create_time = #{create_time,jdbcType=TIMESTAMP},
+		  	last_login_time = #{last_login_time,jdbcType=TIMESTAMP},
+		  	last_pwd_modify_time = #{last_pwd_modify_time,jdbcType=TIMESTAMP}
+ 		where id = #{id}
+	</update>
+	
+	<!-- 删除用户 -->
+	<delete id="deleteUserById" parameterType="java.lang.String">
+		delete from tsys_user where id = #{id}
+	</delete>
+	
+	<!-- 按照主键查找id -->
+	<select id="findUserByUserLoginName" parameterType="java.lang.String" resultType="chen.huai.jie.system.entity.UserEntity">
+		select <include refid="userColumns"/>
+			from tsys_user a
+			where user_login_name = #{user_login_name}
+	</select>
+	
+	<select id="findUsersByState" parameterType="java.lang.Integer" resultType="chen.huai.jie.system.entity.UserEntity">
+		select <include refid="userColumns"/>
+			from tsys_user a
+			where a.state = #{state}
+	</select>
+</mapper>

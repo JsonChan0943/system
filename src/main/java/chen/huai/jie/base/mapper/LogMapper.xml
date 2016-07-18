@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"      
+ "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="chen.huai.jie.system.dao.LogDAO"><!-- 映射到手工编写的映射器UserDAO -->
+	<!-- 查询字段 -->
+	<sql id="logColumns"> 
+		a.id id,a.subject subject,a.content content,a.operator operator,a.create_time create_time
+	</sql>
+
+	<!-- 分页查找日志 -->
+	<select id="findLogByPage" parameterType="chen.huai.jie.system.pager.LogPager" resultType="chen.huai.jie.system.entity.LogEntity">
+		select <include refid="logColumns"/>
+			from tsys_log a
+		<where>
+				1=1
+				<!-- 按条件搜索-日志主题-->
+				<if test='subject != null and !"".equals(subject)'>
+				  	and subject like '%${subject}%'
+			  	</if>
+			  	<!-- 按条件搜索-操作人 -->
+				<if test='operator != null and !"".equals(operator)'>
+				  	and operator like '%${operator}%'
+			  	</if>
+		</where>
+		<if test='sort!=null and !"".equals(sort) and order!=null and !"".equals(order)'>
+			order by ${sort} ${order}
+		</if>
+		<if test='rows!=null and !"".equals(rows)'>
+			limit ${startRow},${rows} 
+		</if>
+	</select>
+	
+	<!-- 统计日志条数 -->
+	<select id="countLogCnt" parameterType="chen.huai.jie.system.pager.LogPager" resultType="java.lang.Long">
+		select count(id)
+			from tsys_log
+		<where>
+				1=1
+				<!-- 按条件搜索-日志主题-->
+				<if test='subject != null and !"".equals(subject)'>
+				  	and subject like '%${subject}%'
+			  	</if>
+			  	<!-- 按条件搜索-操作人 -->
+				<if test='operator != null and !"".equals(operator)'>
+				  	and operator like '%${operator}%'
+			  	</if>
+		</where>
+	</select>
+	
+	<!-- 添加日志记录 -->
+	<insert id="addLog" parameterType="chen.huai.jie.system.entity.LogEntity">
+		 insert into tsys_log
+		 (
+		 	id,subject,content,operator,create_time
+		 )
+		 values
+		 (	 
+		 	 #{id,jdbcType=VARCHAR},
+			 #{subject,jdbcType=VARCHAR},
+			 #{content,jdbcType=VARCHAR},
+			 #{operator,jdbcType=VARCHAR},
+			 #{create_time,jdbcType=TIMESTAMP}
+	 	 )	 		
+	</insert>
+</mapper>

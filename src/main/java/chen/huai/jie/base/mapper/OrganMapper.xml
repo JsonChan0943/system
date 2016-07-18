@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"      
+ "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="chen.huai.jie.system.dao.OrganDAO"><!-- 映射到手工编写的映射器UserDAO -->
+	<!-- 查询字段 -->
+	<sql id="organColumns"> 
+		a.id id,a.pid pid,a.organ_code organ_code,a.organ_name organ_name,a.sort sort,
+	    a.description description,a.remark remark,a.organ_level organ_level
+	</sql>
+	
+	<!-- 根据pid获取机构 -->
+	<select id="findOrganByPid" parameterType="java.lang.String" resultType="chen.huai.jie.system.entity.OrganEntity">
+		select <include refid="organColumns"/>
+			from tsys_organ a
+			where a.pid = #{pid} 
+	</select>
+	
+	<!-- 添加机构记录 -->
+	<insert id="addOrgan" parameterType="chen.huai.jie.system.entity.OrganEntity">
+		 insert into tsys_organ
+		 (
+		 	id,pid,organ_code,organ_name,sort,description,remark,organ_level
+		 )
+		 values
+		 (	 
+		 	 #{id,jdbcType=VARCHAR},
+			 #{pid,jdbcType=VARCHAR},
+			 #{organ_code,jdbcType=VARCHAR},
+			 #{organ_name,jdbcType=VARCHAR},
+			 #{sort,jdbcType=TINYINT},
+			 #{description,jdbcType=VARCHAR},
+			 #{remark,jdbcType=VARCHAR},
+			 #{organ_level,jdbcType=TINYINT}
+	 	 )	 		
+	</insert>
+	
+	<!-- 根据id获取机构 -->
+	<select id="findOrganById" parameterType="java.lang.String" resultType="chen.huai.jie.system.entity.OrganEntity">
+		select <include refid="organColumns"/>
+			from tsys_organ a
+			where a.id = #{id} 
+	</select>
+
+	<!-- 删除机构 -->
+	<delete id="deleteOrganById" parameterType="java.lang.String">
+		delete from tsys_organ where id = #{id}
+	</delete>
+	
+	<!-- 更新机构 -->
+	<update id="updateOrgan" parameterType="chen.huai.jie.system.entity.OrganEntity">
+		update tsys_organ set
+			 pid = #{pid,jdbcType=VARCHAR},
+			 organ_code = #{organ_code,jdbcType=VARCHAR},
+			 organ_name = #{organ_name,jdbcType=VARCHAR},
+			 sort = #{sort,jdbcType=TINYINT},
+			 description = #{description,jdbcType=VARCHAR},
+			 remark = #{remark,jdbcType=VARCHAR},
+			 organ_level = #{organ_level,jdbcType=TINYINT}
+ 		where id = #{id}
+	</update>
+</mapper>

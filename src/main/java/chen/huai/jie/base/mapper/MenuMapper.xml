@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"      
+ "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="chen.huai.jie.system.dao.MenuDAO"><!-- 映射到手工编写的映射器UserDAO -->
+	<!-- 查询字段 -->
+	<sql id="menuColumns"> 
+		a.id id,a.pid pid,a.menu_code menu_code,a.menu_name menu_name,a.menu_url menu_url,
+	    a.is_leaf is_leaf,a.description description,a.remark remark,a.menu_level menu_level
+	</sql>
+	
+	<!-- 分页查找菜单 -->
+	<select id="findMenuByPage" parameterType="chen.huai.jie.system.pager.MenuPager" resultType="chen.huai.jie.system.entity.MenuEntity">
+		select <include refid="menuColumns"/>
+			from tsys_menu a
+		<where>
+				1=1
+		</where>
+		limit ${startRow},${rows} 
+		<!-- order by ${sort} ${order} -->
+	</select>
+	
+	<!-- 统计菜单数量 -->
+	<select id="countMenuCnt" parameterType="chen.huai.jie.system.pager.MenuPager" resultType="java.lang.Long">
+		select count(id)
+			from tsys_menu
+		<where>
+				1=1
+		</where>
+	</select>
+	
+	<!-- 根据pid获取菜单 -->
+	<select id="findMenuByPid" parameterType="java.lang.String" resultType="chen.huai.jie.system.entity.MenuEntity">
+		select <include refid="menuColumns"/>
+			from tsys_menu a
+			where a.pid = #{pid} 
+	</select>
+	
+	<!-- 添加菜单记录 -->
+	<insert id="addMenu" parameterType="chen.huai.jie.system.entity.MenuEntity">
+		 insert into tsys_menu
+		 (
+		 	id,pid,menu_code,menu_name,
+		 	menu_url,is_leaf,description,remark,menu_level
+		 )
+		 values
+		 (	 #{id,jdbcType=VARCHAR},
+			 #{pid,jdbcType=VARCHAR},
+			 #{menu_code,jdbcType=VARCHAR},
+			 #{menu_name,jdbcType=VARCHAR},
+			 #{menu_url,jdbcType=VARCHAR},
+			 #{is_leaf,jdbcType=TINYINT},
+			 #{description,jdbcType=VARCHAR},
+			 #{remark,jdbcType=VARCHAR},
+			 #{menu_level,jdbcType=TINYINT}
+	 	 )	 		
+	</insert>
+	
+	<!-- 根据id获取菜单 -->
+	<select id="findMenuById" parameterType="java.lang.String" resultType="chen.huai.jie.system.entity.MenuEntity">
+		select <include refid="menuColumns"/>
+			from tsys_menu a
+			where a.id = #{id} 
+	</select>
+	
+	<!-- 删除菜单 -->
+	<delete id="deleteMenuById" parameterType="java.lang.String">
+		delete from tsys_menu where id = #{id}
+	</delete>
+	
+	<!-- 更新菜单 -->
+	<update id="updateMenu" parameterType="chen.huai.jie.system.entity.MenuEntity">
+		update tsys_menu set
+			pid = #{pid,jdbcType=VARCHAR},
+			menu_code = #{menu_code,jdbcType=VARCHAR},
+			menu_name = #{menu_name,jdbcType=VARCHAR},
+		 	menu_url = #{menu_url,jdbcType=VARCHAR},
+		 	is_leaf = #{is_leaf,jdbcType=TINYINT},
+		 	description = #{description,jdbcType=VARCHAR},
+		 	remark =  #{remark,jdbcType=VARCHAR},
+		 	menu_level = #{menu_level,jdbcType=TINYINT}
+ 		where id = #{id}
+	</update>
+	
+	<!-- 查询用户能访问到的菜单 -->
+	<select id="getAllowMenuListByPId" parameterType="chen.huai.jie.system.bean.AllowMenuBean" resultType="chen.huai.jie.system.entity.MenuEntity">
+		select distinct m.id id,m.pid pid,m.menu_code menu_code,m.menu_name menu_name,m.menu_url menu_url,
+			   m.is_leaf is_leaf,m.description description,m.remark remark,m.menu_level menu_level
+			 from tsys_menu m, tsys_role_menu rm, tsys_user_role ur
+			 where m.id = rm.menu_id
+			 and rm.role_id = ur.role_id
+			 and m.pid = #{pid}
+			 and ur.user_id = #{user_id}
+	</select>
+</mapper>
