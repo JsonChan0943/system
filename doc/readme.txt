@@ -1,0 +1,1 @@
+解决项目目录结构变红：打开项目下的.idea文件夹，找到其中的vcs.xml打开，将<mapping directory="" vcs="" />中的vcs的值清空即可
