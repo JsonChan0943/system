@@ -1,33 +1,27 @@
 package chen.huai.jie.system.controller;
 
-import java.util.Date;
-import java.util.List;
-
-import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-import javax.validation.Valid;
-
-import org.springframework.stereotype.Controller;
-import org.springframework.validation.BindingResult;
-import org.springframework.validation.ObjectError;
-import org.springframework.web.bind.annotation.RequestMapping;
-
 import chen.huai.jie.base.controller.BaseController;
 import chen.huai.jie.base.enums.enumc.UserStateEnum;
 import chen.huai.jie.base.system.ConstantFile;
-import chen.huai.jie.base.utils.DateUtils;
-import chen.huai.jie.base.utils.GlobalConst;
-import chen.huai.jie.base.utils.JsonModel;
-import chen.huai.jie.base.utils.MD5Utils;
-import chen.huai.jie.base.utils.StringUtils;
+import chen.huai.jie.base.utils.*;
 import chen.huai.jie.system.bean.LoginBean;
 import chen.huai.jie.system.bean.ModifyPwdBean;
 import chen.huai.jie.system.entity.UserEntity;
 import chen.huai.jie.system.service.LoginService;
 import chen.huai.jie.system.service.UserService;
 import chen.huai.jie.system.util.RandomValidateCode;
+import org.springframework.stereotype.Controller;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.ObjectError;
+import org.springframework.web.bind.annotation.RequestMapping;
+
+import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+import javax.validation.Valid;
+import java.util.Date;
+import java.util.List;
 
 /**
  * 登陆控制器
@@ -65,7 +59,7 @@ public class LoginController extends BaseController {
                         HttpServletResponse response) {
         JsonModel jsonModel = new JsonModel();
         /*
-		 * 实体类校验
+         * 实体类校验
 		 */
         if (errors.hasErrors()) {
             List<ObjectError> list = errors.getAllErrors();
@@ -92,7 +86,7 @@ public class LoginController extends BaseController {
                 logger.info("用户" + loginBean.getUser_login_name() + "登陆失败,原因：" + msg);
             } else {
                 // 密码正确
-                if (StringUtils.equals(userEntity.getPassword(),loginBean.getPassword())) {
+                if (StringUtils.equals(userEntity.getPassword(), MD5Utils.GetMD5Code(loginBean.getPassword()))) {
                     if (userEntity.getState() == UserStateEnum.LOCKED.getEnValue()) {
                         String msg = "账号已锁定";
                         jsonModel.setSuccess(false);
@@ -113,7 +107,7 @@ public class LoginController extends BaseController {
                         session.setAttribute(ConstantFile.SESSION_USER_BEAN, userEntity);
                         logger.info("用户" + loginBean.getUser_login_name() + "登陆成功.");
                         addLog(request, "登陆系统", "用户" + loginBean.getUser_login_name() + "登陆成功.");
-						/*
+                        /*
 						 * 登陆成功,清空前面的错误登陆次数记录和自动解锁时间
 						 */
                         userEntity.setAuto_unlock_time(null);
