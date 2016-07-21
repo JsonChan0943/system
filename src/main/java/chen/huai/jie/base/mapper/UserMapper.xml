@@ -114,4 +114,9 @@
 			from tsys_user a
 			where a.state = #{state}
 	</select>
+
+	<select id="findAllUsers" resultType="chen.huai.jie.system.entity.UserEntity">
+		select <include refid="userColumns"/>
+		from tsys_user a
+	</select>
 </mapper>

@@ -47,7 +47,7 @@ public class LoginController extends BaseController {
      * @return
      */
     @RequestMapping("/login.html")
-    public String goLogin() {
+    public String goLogin(HttpServletRequest request, HttpServletResponse response) {
         return "login";
     }
 
@@ -108,7 +108,7 @@ public class LoginController extends BaseController {
                         logger.info("用户" + loginBean.getUser_login_name() + "登陆成功.");
                         addLog(request, "登陆系统", "用户" + loginBean.getUser_login_name() + "登陆成功.");
                         /*
-						 * 登陆成功,清空前面的错误登陆次数记录和自动解锁时间
+                         * 登陆成功,清空前面的错误登陆次数记录和自动解锁时间
 						 */
                         userEntity.setAuto_unlock_time(null);
                         userEntity.setLogin_error_count(0);
